@@ -2,11 +2,10 @@
   (:gen-class)
   (:use clojure-in-action.metadata-example)
   (:use clojure-in-action.multimethod-example)
+  (:use clojure-in-action.concurrency)
 )
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
+(defn -main [& args]
   (println "Hello, World!")
   (println untrusted)
   (println (meta untrusted))
@@ -21,4 +20,13 @@
   (println "Ashley has to pay" (profit-based-affiliate-fee {:salary 82000 :name "Ashley" :referrer :mint.com}) "dollars")
 
   (println "Jason has to pay" (affiliate-fee-for-hierarchy {:salary 92000 :name "Jason" :referrer :mint.com}) "dollars")
+  (println "------------------------concurrency--------------------------")
+  (println all-users)
+  (let [t (Thread. #(add-new-user "steven" 200))]
+    (.start t)
+  )
+  (add-new-user "ashley" 223)
+  (. Thread sleep 1000)
+  (println all-users)
+  (shutdown-agents)
 )
