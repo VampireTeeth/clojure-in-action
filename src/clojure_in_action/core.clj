@@ -3,6 +3,7 @@
   (:use clojure-in-action.metadata-example)
   (:use clojure-in-action.multimethod-example)
   (:use clojure-in-action.concurrency)
+  (:use clojure-in-action.macros)
 )
 
 (defn -main [& args]
@@ -28,5 +29,25 @@
   (add-new-user "ashley" 223)
   (. Thread sleep 1000)
   (println all-users)
+  (println all-users-change-counter)
+  (time (println "long-run result is" (long-run)))
+  (time (println "fast-run result is" (fast-run)))
+  (let [p (promise) t (Thread. #(promised-calculation p))]
+    (.start t)
+    (println "The result of promise is" @p)
+  )
+  (println "------------------------macros--------------------------")
+  (let [a-ref (ref 0) t1 (Thread. #(sync-set a-ref 2)) t2 (Thread. #(sync-set a-ref 3))]
+    (.start t1)
+    (.start t2)
+    (sync-set a-ref 1)
+    (.join t1)
+    (.join t2)
+  )
+  (println (macroexpand '(unless (even? x) (println "It is odd"))))
+  (exhibits-oddity? 11)
+  (exhibits-oddity? 10)
+  (exhibits-oddity-verbose? 11)
+
   (shutdown-agents)
 )
